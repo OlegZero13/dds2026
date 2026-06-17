@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+.deepeval/
+.deepeval-cache.json
+temp_test_run_data.json
+.mcp.json
+
+# organizer-only — keep out of the participants' repo
+solution/
+triage/prompts_sol.py
+scripts/check_solution.py
+scripts/gen_presentation.py
+presentation.excalidraw
+PRESENTATION.md
+CLAUDE.md

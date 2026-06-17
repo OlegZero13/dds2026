@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Crazy-Busy Itd. — Service Desk</title>
+<style>
+  :root {
+    --navy: #1f2d3d;
+    --blue: #2b6cb0;
+    --blue-dark: #245a94;
+    --bg: #eef1f5;
+    --card: #ffffff;
+    --line: #dde3ea;
+    --muted: #6b7785;
+    --ok: #2f855a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--navy);
+    background: var(--bg);
+  }
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  header .logo {
+    width: 38px; height: 38px; border-radius: 8px;
+    background: var(--blue);
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 18px;
+  }
+  header h1 { font-size: 19px; margin: 0; letter-spacing: .3px; }
+  header .motto { color: #aeb9c6; font-size: 13px; margin-top: 2px; }
+  header nav { margin-left: auto; display: flex; gap: 20px; font-size: 13px; color: #c6d0db; }
+  header nav .status { color: #ffb4b4; font-weight: 600; }
+  main {
+    max-width: 1080px; margin: 26px auto; padding: 0 20px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+  }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 20px 22px;
+    box-shadow: 0 1px 2px rgba(31,45,61,.05);
+  }
+  .card h2 { font-size: 15px; margin: 0 0 14px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 5px; }
+  input[type=text], textarea, select {
+    width: 100%; padding: 9px 11px; border: 1px solid var(--line);
+    border-radius: 8px; font-size: 14px; font-family: inherit; color: var(--navy);
+  }
+  textarea { min-height: 120px; resize: vertical; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  button {
+    margin-top: 18px; width: 100%; background: var(--blue); color: #fff;
+    border: 0; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: var(--blue-dark); }
+  button:disabled { opacity: .6; cursor: progress; }
+  .payload {
+    margin-top: 16px; background: #f7f9fb; border: 1px dashed var(--line);
+    border-radius: 8px; padding: 10px 12px; font-size: 12px;
+  }
+  .payload .ttl { font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 12px; color: #33414f; }
+  .placeholder { color: var(--muted); font-size: 14px; }
+  .status-line { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px; border: 2px solid #cfd8e3;
+    border-top-color: var(--blue); border-radius: 50%; animation: spin .8s linear infinite;
+    vertical-align: -2px; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .field { margin-bottom: 14px; }
+  .field .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 700;
+    font-size: 14px; color: #fff; margin-top: 4px;
+  }
+  .cat-billing { background: #b7791f; }
+  .cat-technical { background: #2b6cb0; }
+  .cat-feature_request { background: #6b46c1; }
+  .cat-complaint { background: #c53030; }
+  .cat-unknown { background: #718096; }
+  .chips { margin-top: 6px; }
+  .chip {
+    display: inline-block; background: #edf2f7; border: 1px solid var(--line);
+    border-radius: 999px; padding: 3px 10px; font-size: 13px; margin: 0 6px 6px 0;
+  }
+  .tool {
+    background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 8px;
+    padding: 8px 10px; font-size: 13px; margin-top: 6px;
+  }
+  .tool code { background: #e6ffed; padding: 1px 5px; border-radius: 4px; }
+  .none { color: var(--muted); font-size: 13px; }
+  .amount { font-size: 22px; font-weight: 800; color: var(--ok); }
+  details { margin-top: 16px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--blue); }
+  .err { color: #c53030; font-weight: 600; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">CB</div>
+  <div>
+    <h1>Crazy-Busy Itd. — IT Service Desk</h1>
+    <div class="motto">"We're so busy, but you're welcome to send a ticket anyway."</div>
+  </div>
+  <nav>
+    <span>Home</span><span>Tickets</span><span>Knowledge Base</span>
+    <span class="status">● Status: Extremely Busy</span>
+  </nav>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Open a new ticket</h2>
+    <form id="ticket-form">
+      <div class="field">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" placeholder="Short summary of your issue" />
+      </div>
+      <div class="field">
+        <label for="description">Description</label>
+        <textarea id="description" placeholder="Describe what happened..."></textarea>
+      </div>
+      <div class="field">
+        <label for="priority">Priority</label>
+        <select id="priority">
+          <option>Low</option><option selected>Medium</option><option>High</option><option>I'm panicking</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="tags">Your tags (comma separated)</label>
+        <input type="text" id="tags" placeholder="e.g. login, refund, mobile" />
+        <div class="hint">Tags are your own metadata. Notice below what actually gets sent to the AI.</div>
+      </div>
+      <button type="submit" id="submit-btn">Submit ticket</button>
+    </form>
+
+    <div class="payload">
+      <div class="ttl">📦 Payload that will be sent to the model</div>
+      <pre id="payload-view">Fill in the form to see it here.</pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>AI triage result</h2>
+    <div id="result">
+      <p class="placeholder">Submit a ticket and our (over)worked AI will triage it here.</p>
+    </div>
+  </section>
+</main>
+
+<footer>Crazy-Busy Itd. — a fictional company for a workshop on testing agentic applications.</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const VALID = ["billing", "technical", "feature_request", "complaint"];
+
+function buildPayload() {
+  const subject = $("subject").value.trim();
+  const description = $("description").value.trim();
+  const tags = $("tags").value.split(",").map(t => t.trim()).filter(Boolean);
+  const text = [subject, description].filter(Boolean).join("\n\n");
+  return { subject, description, priority: $("priority").value, tags, text };
+}
+
+function refreshPayload() {
+  $("payload-view").textContent = JSON.stringify(buildPayload(), null, 2);
+}
+["subject", "description", "tags", "priority"].forEach(id =>
+  $(id).addEventListener("input", refreshPayload));
+
+function esc(s) {
+  return String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+}
+
+function renderResult(data) {
+  const cat = data.category;
+  const catClass = VALID.includes(cat) ? "cat-" + cat : "cat-unknown";
+
+  let toolsHtml;
+  if (data.tools && data.tools.length) {
+    toolsHtml = data.tools.map(t => {
+      const expr = t.args && t.args.expression !== undefined ? t.args.expression : JSON.stringify(t.args);
+      return `<div class="tool">🔧 called <b>${esc(t.name)}</b>(<code>${esc(expr)}</code>) → <b>${esc(t.result)}</b></div>`;
+    }).join("");
+  } else {
+    toolsHtml = `<div class="none">No tools were used — the AI answered on its own.</div>`;
+  }
+
+  const amountHtml = (data.disputed_amount !== null && data.disputed_amount !== undefined)
+    ? `<div class="field"><div class="k">Disputed amount</div><div class="amount">$${esc(data.disputed_amount)}</div></div>`
+    : "";
+
+  $("result").innerHTML = `
+    <div class="status-line">📨 We're on it... here's what the AI made of your ticket:</div>
+    <div class="field">
+      <div class="k">Category</div>
+      <div><span class="badge ${catClass}">${esc(cat || "unknown")}</span></div>
+    </div>
+    <div class="field">
+      <div class="k">Keywords</div>
+      <div class="chips">${(data.keywords || []).map(k => `<span class="chip">${esc(k)}</span>`).join("") || '<span class="none">none</span>'}</div>
+    </div>
+    ${amountHtml}
+    <div class="field">
+      <div class="k">Tool usage</div>
+      ${toolsHtml}
+    </div>
+    <div class="hint">Handled in ${esc(data.elapsed_s)}s by the triage agent.</div>
+    <details>
+      <summary>Show raw AI response (JSON)</summary>
+      <pre>${esc(JSON.stringify(data, null, 2))}</pre>
+    </details>`;
+}
+
+$("ticket-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const payload = buildPayload();
+  refreshPayload();
+  if (!payload.text) {
+    $("result").innerHTML = `<p class="err">Please enter a subject or description first.</p>`;
+    return;
+  }
+  $("submit-btn").disabled = true;
+  $("result").innerHTML = `<div class="status-line"><span class="spinner"></span>We're so busy... sending your ticket to the AI triage agent.</div>`;
+  try {
+    const resp = await fetch("/api/classify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || "request failed");
+    renderResult(data);
+  } catch (err) {
+    $("result").innerHTML = `<p class="err">Something went wrong: ${esc(err.message)}</p>
+      <p class="hint">Is the model endpoint (OLLAMA_HOST) reachable?</p>`;
+  } finally {
+    $("submit-btn").disabled = false;
+  }
+});
+
+refreshPayload();
+</script>
+</body>
+</html>
